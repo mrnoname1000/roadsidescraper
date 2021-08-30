@@ -15,17 +15,11 @@ def tristrip(string):
 def create_parser():
     parser = argparse.ArgumentParser()
 
-    def stdinpath(path):
-        return sys.stdin if path == "-" else Path(path)
-
-    def stdoutpath(path):
-        return sys.stdout if path == "-" else Path(path)
-
     parser.add_argument(
         "-o",
         "--output",
-        type=stdoutpath,
-        default=sys.stdout,
+        type=Path,
+        default="-",
         help="File to write gpx data to",
     )
 
@@ -144,10 +138,10 @@ def main():
 
     xml = gpx.to_xml()
 
-    if isinstance(args.output, Path):
-        args.output.write_text(xml)
+    if str(args.output) == "-":
+        sys.stdout.write(xml)
     else:
-        args.output.write(xml)
+        args.output.write_text(xml)
 
 
 if __name__ == "__main__":
