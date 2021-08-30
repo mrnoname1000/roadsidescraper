@@ -7,6 +7,19 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 
+# fmt: off
+REGIONS = [
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA",
+    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA",
+    "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY",
+    "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX",
+    "UT", "VT", "VA", "WA", "WV", "WI", "WY", "XAB", "XBC", "XMB",
+    "XNB", "XNF", "XNT", "XNS", "XON", "XPQ", "XPE", "XSK", "XYT",
+]
+# fmt: on
+_ARG_REGIONS = ["ALL", *REGIONS]
+
+
 # strip leading, trailing, and left-hand whitespace
 def tristrip(string):
     return textwrap.dedent(string).strip()
@@ -23,10 +36,16 @@ def create_parser():
         help="File to write gpx data to",
     )
 
+    def strupper(s):
+        return str(s).upper()
+
     parser.add_argument(
         "regions",
         metavar="REGION",
+        type=strupper,
         nargs="*",
+        choices=_ARG_REGIONS,
+        default="ALL",
         help="Regions to extract data for",
     )
 
@@ -82,14 +101,17 @@ def main():
     parser = create_parser()
     args = parser.parse_args()
 
-    regions = get_regions()
-
-    if args.regions:
-        for region in args.regions:
-            if region not in region:
-                parser.error(f"Invalid region: region")
-
+    if args.regions == "ALL":
+        regions = REGIONS
+    else:
         regions = args.regions
+
+        for region in regions:
+            if region not in _ARG_REGIONS:
+                parser.error(f"Invalid region: {region}")
+
+        if "ALL" in regions:
+            regions = REGIONS
 
     if len(regions) > 1:
         regions = tqdm(regions)
