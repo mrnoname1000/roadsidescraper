@@ -134,7 +134,6 @@ def main():
             raise TypeError("No js scripts found")
 
         parsed = pyjsparser.parse(js)
-        # expressions = parsed["body"][0]["body"]
 
         for call in get_calls(parsed):
             if call["callee"]["name"] != "addMarkerById":
@@ -147,7 +146,7 @@ def main():
 
     print(f"{len(pins)} pins extracted", file=sys.stderr)
 
-    # write parsed output
+    # write parsed data
     gpx = gpxpy.gpx.GPX()
 
     for pin in pins:
