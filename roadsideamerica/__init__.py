@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import sys, re, argparse, textwrap, random, os.path, time
-from pathlib import Path
 
 import requests, pyjsparser, gpxpy
 from bs4 import BeautifulSoup
@@ -31,7 +30,6 @@ def create_parser():
     parser.add_argument(
         "-o",
         "--output",
-        type=Path,
         default="-",
         help="File to write gpx data to",
     )
@@ -170,7 +168,8 @@ def main():
     if str(args.output) == "-":
         sys.stdout.write(xml)
     else:
-        args.output.write_text(xml)
+        with open(args.output, "w") as fp:
+            fp.write(xml)
 
 
 if __name__ == "__main__":
