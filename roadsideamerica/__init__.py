@@ -69,12 +69,12 @@ def get_regions():
     return regions
 
 
-def parse_marker(marker):
+def parse_marker_args(args):
     pin = {
-        "uid": marker[0],
-        "longitude": marker[2],
-        "latitude": marker[3],
-        "name": marker[4],
+        "uid": args[0],
+        "longitude": args[2],
+        "latitude": args[3],
+        "name": args[4],
     }
 
     for k in pin:
@@ -83,18 +83,18 @@ def parse_marker(marker):
     return pin
 
 
-def get_call(obj, name):
+def get_calls(obj):
     if isinstance(obj, dict):
-        if obj["type"] == "CallExpression" and obj["callee"]["name"] == name:
-            yield parse_marker(obj["arguments"])
+        if obj["type"] == "CallExpression":
+            yield obj
 
         else:
             for x in obj.values():
-                yield from get_call(x, name)
+                yield from get_calls(x)
 
     elif isinstance(obj, list):
         for x in obj:
-            yield from get_call(x, name)
+            yield from get_calls(x)
 
 
 def main():
@@ -138,7 +138,10 @@ def main():
         parsed = pyjsparser.parse(js)
         # expressions = parsed["body"][0]["body"]
 
-        for marker in get_call(parsed, "addMarkerById"):
+        for call in get_calls(parsed):
+            if call["callee"]["name"] != "addMarkerById":
+                continue
+            marker = parse_marker_args(call["arguments"])
             pins.append(marker)
 
         if i != len(regions):
