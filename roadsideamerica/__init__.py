@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys, re, argparse, textwrap, random, os.path
+import sys, re, argparse, textwrap, random, os.path, time
 from pathlib import Path
 
 import requests, pyjsparser, gpxpy
@@ -117,7 +117,7 @@ def main():
         regions = tqdm(regions)
 
     pins = []
-    for region in regions:
+    for i, region in enumerate(regions):
         resp = requests.get(
             "https://www.roadsideamerica.com/map/attractionsByState.php",
             params={"state": region},
@@ -140,6 +140,10 @@ def main():
 
         for marker in get_call(parsed, "addMarkerById"):
             pins.append(marker)
+
+        if i != len(regions):
+            time.sleep(1)
+
     print(f"{len(pins)} pins extracted", file=sys.stderr)
 
     # write parsed output
