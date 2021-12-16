@@ -124,22 +124,28 @@ def main():
 
         soup = BeautifulSoup(resp.content, features="html.parser")
         scripts = soup.find_all("script")
-        for script in scripts[::-1]:
-            if script.get("type") == "text/javascript":
-                # TODO: detect correct script by parsing
-                js = script.string
+
+        region_pins = []
+
+        for script in scripts:
+            if script.get("type") != "text/javascript":
+                continue
+
+            js = script.string
+            parsed = pyjsparser.parse(js)
+
+            for call in get_calls(parsed):
+                if call["callee"]["name"] == "addMarkerById":
+                    marker = parse_marker_args(call["arguments"])
+                    region_pins.append(marker)
+
+            if region_pins:
                 break
 
-        if js is None:
-            raise TypeError("No js scripts found")
+        if not region_pins:
+            raise KeyError("No js scripts found")
 
-        parsed = pyjsparser.parse(js)
-
-        for call in get_calls(parsed):
-            if call["callee"]["name"] != "addMarkerById":
-                continue
-            marker = parse_marker_args(call["arguments"])
-            pins.append(marker)
+        pins.extend(region_pins)
 
         if i != len(regions):
             time.sleep(1)
