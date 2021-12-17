@@ -123,14 +123,11 @@ def main():
         resp.raise_for_status()
 
         soup = BeautifulSoup(resp.content, features="html.parser")
-        scripts = soup.find_all("script")
+        scripts = soup.find_all("script", type_="text/javascript")
 
         region_pins = []
 
         for script in scripts:
-            if script.get("type") != "text/javascript":
-                continue
-
             js = script.string
             parsed = pyjsparser.parse(js)
 
