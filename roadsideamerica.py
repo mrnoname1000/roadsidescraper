@@ -157,11 +157,7 @@ def main():
         wps.longitude = pin["longitude"]
         wps.latitude = pin["latitude"]
         wps.name = pin["name"]
-        wps.description = tristrip(
-            f"""
-                https://www.roadsideamerica.com/tip/{pin['uid']}
-            """
-        )
+        wps.description = f"https://www.roadsideamerica.com/tip/{pin['uid']}"
 
         gpx.waypoints.append(wps)
 
