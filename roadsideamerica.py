@@ -123,7 +123,7 @@ def main():
         resp.raise_for_status()
 
         soup = BeautifulSoup(resp.content, features="html.parser")
-        scripts = soup.find_all("script", type_="text/javascript")
+        scripts = soup.find_all("script", **{"type": "text/javascript"})
 
         region_pins = []
 
