@@ -161,7 +161,11 @@ def main():
 
         gpx.waypoints.append(wps)
 
-    xml = gpx.to_xml()
+    if sys.stdout.isatty():
+        prettyprint = True
+    else:
+        prettyprint = False
+    xml = gpx.to_xml(prettyprint=prettyprint)
 
     if str(args.output) == "-":
         sys.stdout.write(xml)
