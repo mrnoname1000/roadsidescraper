@@ -155,7 +155,7 @@ def main():
     for pin in pins:
         wps = gpxpy.gpx.GPXWaypoint()
         wps.longitude = pin["longitude"]
-        wps.latitude = pin["latitude"]
+        wps.latitude = pin["latitude"].lstrip("-")
         wps.name = pin["name"]
         wps.description = f"https://www.roadsideamerica.com/tip/{pin['uid']}"
 
